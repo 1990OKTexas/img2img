@@ -74,6 +74,13 @@
       reader.readAsDataURL(this.files[0]);
     });
 
+<!-- Prompt Input -->
+<div class="mt-4 w-64">
+  <label for="prompt-input" class="block mb-1">Prompt (What should the AI do?)</label>
+  <input type="text" id="prompt-input" placeholder="e.g. turn into anime style"
+         class="w-full p-2 text-black rounded" />
+</div>
+    
     // Placeholder generate button
     document.getElementById('generate-btn').addEventListener('click', function () {
       alert('This would trigger image generation.');
