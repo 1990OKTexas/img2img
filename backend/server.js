@@ -8,12 +8,18 @@ const fetch = require('node-fetch');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve static files (index.html, CSS, etc.)
+app.use(express.static("public"));
+
+// Upload setup (store uploaded images in temp folder)
 const upload = multer({ dest: 'temp/' });
 
+// Img2Img route
 app.post('/generate', upload.single('image'), async (req, res) => {
   try {
     const prompt = req.body.prompt;
@@ -23,7 +29,7 @@ app.post('/generate', upload.single('image'), async (req, res) => {
 
     const imageBuffer = fs.readFileSync(imagePath);
     const base64Image = imageBuffer.toString('base64');
-    fs.unlinkSync(imagePath);
+    fs.unlinkSync(imagePath); // Clean up
 
     // Call Replicate API
     const response = await fetch("https://api.replicate.com/v1/predictions", {
@@ -47,6 +53,7 @@ app.post('/generate', upload.single('image'), async (req, res) => {
     const prediction = await response.json();
 
     if (prediction?.urls?.get) {
+      // Poll for result
       let result = null;
       while (!result || result.status === "starting" || result.status === "processing") {
         await new Promise(resolve => setTimeout(resolve, 2000));
@@ -76,6 +83,7 @@ app.post('/generate', upload.single('image'), async (req, res) => {
   }
 });
 
+// Start server
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Img2Img server running on port ${PORT}`);
 });
