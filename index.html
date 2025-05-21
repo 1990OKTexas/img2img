@@ -79,5 +79,57 @@
       alert('This would trigger image generation.');
     });
   </script>
+
+<script>
+  const backendURL = "https://img2img-44cx.onrender.com";
+
+  document.getElementById('image-input').addEventListener('change', function () {
+    const reader = new FileReader();
+    reader.onload = e => {
+      document.getElementById('preview-img').src = e.target.result;
+    };
+    reader.readAsDataURL(this.files[0]);
+  });
+
+  document.getElementById('generate-btn').addEventListener('click', async function () {
+    const imageInput = document.getElementById('image-input');
+    if (!imageInput.files.length) {
+      alert("Please upload an image.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("image", imageInput.files[0]);
+    formData.append("mode", document.getElementById("mode-select").value);
+    formData.append("strength", document.getElementById("strength-slider").value);
+
+    const generateBtn = document.getElementById("generate-btn");
+    generateBtn.textContent = "Generating...";
+    generateBtn.disabled = true;
+
+    try {
+      const response = await fetch(`${backendURL}/generate`, {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        document.getElementById("result-img").src = data.image;
+        document.getElementById("download-btn").href = data.image;
+        document.getElementById("result-container").classList.remove("hidden");
+      } else {
+        alert("Generation failed.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong.");
+    }
+
+    generateBtn.textContent = "Generate";
+    generateBtn.disabled = false;
+  });
+</script>
+  
 </body>
 </html>
