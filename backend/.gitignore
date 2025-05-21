@@ -1,2 +1,13 @@
+# Node modules (never push these)
 node_modules/
+
+# Environment variables (keep secrets safe)
+.env
+
+# Temporary uploaded files
 temp/
+
+# OS + IDE files
+.DS_Store
+Thumbs.db
+.vscode/
